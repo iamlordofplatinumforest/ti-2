@@ -46,8 +46,7 @@ jobs:
                    --add-modules javafx.controls,javafx.fxml `
                    --win-shortcut `
                    --win-menu `
-                   --vendor "YourName" `
-                   --icon src/main/resources/icon.ico `
+                   --vendor "YourName" 
                    --dest release
 
       - name: Upload EXE artifact
