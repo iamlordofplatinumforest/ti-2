@@ -36,23 +36,25 @@ jobs:
         run: choco install wixtoolset -y
 
       - name: Create EXE installer
+        shell: pwsh
         run: |
-          jpackage --type exe `
-                   --name Lab2JavaFX `
-                   --input target `
-                   --main-jar lab2JAVA-1.0-SNAPSHOT.jar `
-                   --main-class com.example.lab2java.HelloApplication `
-                   --module-path $env:PATH_TO_FX `
-                   --add-modules javafx.controls,javafx.fxml `
-                   --win-shortcut `
-                   --win-menu `
-                   --vendor "YourName" 
-                   --dest release
+          $jpackageArgs = @(
+            "--type", "exe",
+            "--name", "Lab2JavaFX",
+            "--input", "target",
+            "--main-jar", "lab2JAVA-1.0-SNAPSHOT.jar",
+            "--main-class", "com.example.lab2java.HelloApplication",
+            "--module-path", "$env:PATH_TO_FX",
+            "--add-modules", "javafx.controls,javafx.fxml",
+            "--win-shortcut",
+            "--win-menu",
+            "--vendor", "YourName",
+            "--dest", "release"
+          )
+          jpackage @jpackageArgs
 
-      - name: Upload EXE artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: Lab2JavaFX-Installer
-          path: |
-            release/Lab2JavaFX.exe
-            release/Lab
+          path: release/Lab2JavaFX.exe
