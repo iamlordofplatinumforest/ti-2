@@ -9,16 +9,25 @@ on:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      JAVA_HOME: C:\Program Files\Java\jdk-21
+      PATH_TO_FX: ${{ github.workspace }}\javafx-sdk-21.0.2\lib
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
+
+      - name: Download JavaFX SDK
+        run: |
+          Invoke-WebRequest -Uri "https://download2.gluonhq.com/openjfx/21.0.2/openjfx-21.0.2_windows-x64_bin-sdk.zip" -OutFile "javafx-sdk.zip"
+          Expand-Archive -Path "javafx-sdk.zip" -DestinationPath .
+          Rename-Item -Path "javafx-sdk-21.0.2" -NewName "javafx-sdk"
 
       - name: Build with Maven
         run: mvn clean package
@@ -28,17 +37,23 @@ jobs:
 
       - name: Create EXE installer
         run: |
-          jpackage --name Lab2JavaFX `
-                   --input target/ `
+          jpackage --type exe `
+                   --name Lab2JavaFX `
+                   --input target `
                    --main-jar lab2JAVA-1.0-SNAPSHOT.jar `
-                   --main-class your.main.Class `
-                   --type exe `
+                   --main-class com.example.lab2java.HelloApplication `
+                   --module-path $env:PATH_TO_FX `
+                   --add-modules javafx.controls,javafx.fxml `
                    --win-shortcut `
                    --win-menu `
-                   --vendor "YourName"
+                   --vendor "YourName" `
+                   --icon src/main/resources/icon.ico `
+                   --dest release
 
-      - name: Upload EXE  artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
         with:
-          name: Windows-Installer
-          path: Lab2JavaFX.exe
+          name: Lab2JavaFX-Installer
+          path: |
+            release/Lab2JavaFX.exe
+            release/Lab
