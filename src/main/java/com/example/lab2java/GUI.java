@@ -112,7 +112,7 @@ public class GUI extends Application {
         rightPanel.getChildren().add(changeButton);
 
         formatBox = new ComboBox<>();
-        formatBox.getItems().addAll("jpg", "png", "mov", "aiff", "txt", "docx");
+        formatBox.getItems().addAll("jpg", "png", "mov", "aiff", "txt", "docx", "mp3", "aif");
         formatBox.setValue("jpg");
 
         Button saveFileButton = new Button("Сохранить в файл");
@@ -177,8 +177,14 @@ public class GUI extends Application {
 
     private void CipherClicked() {
         String plainKey = seedEntry.getText();
-        if (fileBytes == null || plainKey.isEmpty()) {
-            showErrorAlert("Файл не загружен или ключ пуст");
+        if (fileBytes == null) {
+            showErrorAlert("Файл не загружен");
+            return;
+        } else if (plainKey.isEmpty()) {
+            showErrorAlert("Ключ пуст");
+            return;
+        } else if (plainKey.length() < 23) {
+            showErrorAlert("Длина ключа должна быть 23 бита");
             return;
         }
         Task<Void> cipherTask = new Task<>() {
